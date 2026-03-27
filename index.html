@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AlphaBébé</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playwrite+FR+Trad:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #fafafa;
+      color: #333;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Nav bar --- */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: #fff;
+      border-bottom: 2px solid #eee;
+      flex-shrink: 0;
+    }
+
+    .nav-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    nav button {
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    nav button.active {
+      background: #333;
+      color: #fff;
+      border-color: #333;
+    }
+
+    nav button:active {
+      transform: scale(0.95);
+    }
+
+    /* --- Views --- */
+    .view {
+      display: none;
+      flex: 1;
+      padding: 16px;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* --- Alphabet grid --- */
+    #alphabet-view {
+      align-items: start;
+    }
+
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .tile {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.1s;
+      min-height: 80px;
+    }
+
+    .tile:active {
+      transform: scale(0.92);
+      opacity: 0.8;
+    }
+
+    .tile .letter {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    /* --- Words view --- */
+    #words-view {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .word-display {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 16px;
+      border-radius: 20px;
+      transition: gap 0.3s, transform 0.1s, opacity 0.1s;
+    }
+
+    .word-display:not(.decomposed):active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+
+    .word-display.decomposed {
+      gap: clamp(16px, 5vw, 40px);
+      cursor: default;
+    }
+
+    .word-display .letter {
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 700;
+      line-height: 1.1;
+      transition: transform 0.1s, opacity 0.1s;
+    }
+
+    .word-display.decomposed .letter {
+      cursor: pointer;
+      border-radius: 12px;
+    }
+
+    .word-display.decomposed .letter:active {
+      transform: scale(0.9);
+      opacity: 0.7;
+    }
+
+    .word-display .letter.highlighted {
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+      transform: scale(1.1);
+    }
+
+    .word-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .word-actions button {
+      font-size: 1.5rem;
+      width: 52px;
+      height: 52px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .word-actions button:active {
+      transform: scale(0.9);
+    }
+
+    .word-actions button.active {
+      background: #333;
+      border-color: #333;
+    }
+
+    .word-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .word-nav button {
+      font-size: 2rem;
+      width: 56px;
+      height: 56px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .word-nav button:active {
+      transform: scale(0.9);
+    }
+
+    .word-nav button:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .word-counter {
+      font-size: 1.2rem;
+      color: #999;
+      font-weight: 600;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* --- Font style modes --- */
+    body[data-font-style="uppercase"] .letter {
+      text-transform: uppercase;
+      font-family: system-ui, sans-serif;
+    }
+
+    body[data-font-style="lowercase"] .letter {
+      text-transform: lowercase;
+      font-family: system-ui, sans-serif;
+    }
+
+    body[data-font-style="cursive"] .letter {
+      text-transform: lowercase;
+      font-family: 'Playwrite FR Trad', cursive;
+    }
+
+    /* Cursive needs size adjustments */
+    body[data-font-style="cursive"] .tile .letter {
+      font-size: 2.2rem;
+    }
+
+    body[data-font-style="cursive"] .word-display .letter {
+      font-size: clamp(3rem, 9vw, 6rem);
+    }
+
+    /* --- Word list modal --- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .modal-header h2 {
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      font-size: 1.5rem;
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: #f0f0f0;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+    }
+
+    .modal-close:active {
+      transform: scale(0.9);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .word-list-add {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px;
+      border-bottom: 2px solid #eee;
+    }
+
+    .word-list-add input {
+      flex: 1;
+      font-size: 1.1rem;
+      padding: 10px 14px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      outline: none;
+      font-family: system-ui, sans-serif;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .word-list-add input:focus {
+      border-color: #457B9D;
+    }
+
+    .word-list-add button {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      background: #2D936C;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .word-list-add button:active {
+      transform: scale(0.95);
+    }
+
+    .word-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .word-item:last-child {
+      border-bottom: none;
+    }
+
+    .word-item-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+      cursor: pointer;
+      flex: 1;
+      padding: 4px 0;
+    }
+
+    .word-item-text:active {
+      opacity: 0.6;
+    }
+
+    .word-item-delete {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: #fee;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #E63946;
+      flex-shrink: 0;
+    }
+
+    .word-item-delete:active {
+      transform: scale(0.9);
+      background: #fcc;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 2px solid #eee;
+      text-align: center;
+    }
+
+    .btn-reset {
+      font-size: 0.9rem;
+      padding: 8px 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .btn-reset:active {
+      transform: scale(0.95);
+    }
+
+    .word-list-empty {
+      text-align: center;
+      padding: 32px 0;
+      color: #999;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body data-font-style="cursive">
+
+  <nav>
+    <div class="nav-group">
+      <button id="btn-alphabet" onclick="showView('alphabet')">Alphabet</button>
+      <button id="btn-words" class="active" onclick="showView('words')">Mots</button>
+    </div>
+    <div class="nav-group">
+      <button id="btn-upper" onclick="setFontStyle('uppercase')">ABC</button>
+      <button id="btn-lower" onclick="setFontStyle('lowercase')">abc</button>
+      <button id="btn-cursive" class="active" onclick="setFontStyle('cursive')">cursive</button>
+    </div>
+  </nav>
+
+  <div id="alphabet-view" class="view">
+    <div class="alphabet-grid" id="alphabet-grid"></div>
+  </div>
+
+  <div id="words-view" class="view active">
+    <div class="word-display" id="word-display"></div>
+    <div class="word-actions">
+      <button id="btn-speak-word" onclick="speakWord()" title="Lire le mot">&#x1F50A;</button>
+      <button id="btn-decompose" onclick="toggleDecompose()" title="Décomposer">&#x2194;</button>
+    </div>
+    <div class="word-nav">
+      <button onclick="prevWord()">&#9664;</button>
+      <span class="word-counter" id="word-counter"></span>
+      <button onclick="nextWord()">&#9654;</button>
+    </div>
+    <button onclick="openWordList()" style="margin-top:12px;font-size:1rem;font-weight:600;padding:10px 20px;border:2px solid #ddd;border-radius:12px;background:#fff;color:#555;cursor:pointer;">Liste des mots</button>
+  </div>
+
+  <div class="modal-overlay" id="word-list-modal" onclick="closeWordListOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Liste des mots</h2>
+        <button class="modal-close" onclick="closeWordList()">&times;</button>
+      </div>
+      <div class="word-list-add">
+        <input type="text" id="new-word-input" placeholder="Nouveau mot..." autocapitalize="none" autocomplete="off">
+        <button onclick="addWord()">Ajouter</button>
+      </div>
+      <div class="modal-body" id="word-list-body"></div>
+      <div class="modal-footer">
+        <button class="btn-reset" onclick="resetWords()">Remettre les mots par défaut</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Default word list (easy French words for 3-4 year olds) ---
+    const DEFAULT_WORDS = [
+      // 2-3 letters
+      'le', 'la', 'un', 'il', 'tu', 'on', 'ami', 'eau', 'rue', 'lit',
+      'bus', 'sac', 'rat', 'roi', 'mot', 'dos', 'riz',
+      // 4 letters
+      'chat', 'lune', 'papa', 'mama', 'bébé', 'dame', 'jupe', 'lait',
+      'loup', 'noix', 'ours', 'pied', 'robe', 'rose', 'vélo',
+      // 5+ letters
+      'arbre', 'avion', 'maison', 'livre', 'table', 'pomme', 'lapin',
+      'soleil', 'banane', 'souris'
+    ];
+
+    const STORAGE_KEY = 'alphabebe-words';
+
+    function loadWords() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) { /* ignore */ }
+      }
+      return [...DEFAULT_WORDS];
+    }
+
+    function saveWords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    }
+
+    let words = loadWords();
+
+    // --- Letter colors ---
+    const COLORS = {
+      a: '#E63946', b: '#457B9D', c: '#F4A261', d: '#7B2D8E',
+      e: '#2D936C', f: '#E91E8C', g: '#0B7A75', h: '#FF6B6B',
+      i: '#3D5A80', j: '#E6A817', k: '#C1121F', l: '#588B00',
+      m: '#C20088', n: '#1D3557', o: '#F77F00', p: '#9B5DE5',
+      q: '#6B7F2E', r: '#E84393', s: '#00B4D8', t: '#00998F',
+      u: '#D35400', v: '#740AFF', w: '#8B1A4A', x: '#4A6670',
+      y: '#E9C46A', z: '#FF5733'
+    };
+
+    // --- State ---
+    let currentWordIndex = 0;
+    let currentLetterIndex = -1;
+    let decomposed = false;
+    let voices = [];
+    let currentView = 'words';
+    let modalOpen = false;
+
+    // --- Accent normalization ---
+    function baseChar(c) {
+      return c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+
+    function colorFor(c) {
+      return COLORS[baseChar(c)] || '#999';
+    }
+
+    // --- Speech ---
+    function loadVoices() {
+      voices = speechSynthesis.getVoices();
+    }
+
+    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    loadVoices();
+
+    function speak(text) {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      utterance.rate = 0.85;
+      const frenchVoice = voices.find(v => v.lang.startsWith('fr'));
+      if (frenchVoice) utterance.voice = frenchVoice;
+      speechSynthesis.speak(utterance);
+    }
+
+    // --- Alphabet grid ---
+    function buildAlphabet() {
+      const grid = document.getElementById('alphabet-grid');
+      for (let i = 0; i < 26; i++) {
+        const letter = String.fromCharCode(97 + i); // a-z
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.style.backgroundColor = COLORS[letter];
+        tile.innerHTML = `<span class="letter">${letter}</span>`;
+        tile.addEventListener('click', () => speak(letter));
+        grid.appendChild(tile);
+      }
+    }
+
+    // --- Words view ---
+    function renderWord() {
+      const display = document.getElementById('word-display');
+      display.classList.toggle('decomposed', decomposed);
+      display.onclick = decomposed ? null : speakWord;
+      if (words.length === 0) {
+        display.innerHTML = '<span style="color:#999;font-size:1.2rem;">Aucun mot</span>';
+        document.getElementById('word-counter').textContent = '0 / 0';
+        currentLetterIndex = -1;
+        return;
+      }
+      if (currentWordIndex >= words.length) currentWordIndex = words.length - 1;
+      const word = words[currentWordIndex];
+      if (currentLetterIndex >= word.length) currentLetterIndex = word.length - 1;
+      display.innerHTML = '';
+      for (let i = 0; i < word.length; i++) {
+        const char = word[i];
+        const span = document.createElement('span');
+        span.className = 'letter';
+        if (i === currentLetterIndex) span.classList.add('highlighted');
+        span.textContent = char;
+        span.style.color = colorFor(char);
+        if (decomposed) {
+          const c = char.toLowerCase();
+          span.addEventListener('click', () => speak(c));
+        }
+        display.appendChild(span);
+      }
+      document.getElementById('word-counter').textContent =
+        `${currentWordIndex + 1} / ${words.length}`;
+    }
+
+    function speakWord() {
+      if (words.length > 0) speak(words[currentWordIndex]);
+    }
+
+    function toggleDecompose() {
+      decomposed = !decomposed;
+      document.getElementById('btn-decompose').classList.toggle('active', decomposed);
+      renderWord();
+    }
+
+    function prevWord() {
+      if (currentWordIndex > 0) {
+        currentWordIndex--;
+        currentLetterIndex = -1;
+        renderWord();
+      }
+    }
+
+    function nextWord() {
+      if (currentWordIndex < words.length - 1) {
+        currentWordIndex++;
+        currentLetterIndex = -1;
+        renderWord();
+      }
+    }
+
+    // --- Word list management ---
+    function openWordList() {
+      renderWordList();
+      document.getElementById('word-list-modal').classList.add('open');
+      modalOpen = true;
+    }
+
+    function closeWordList() {
+      document.getElementById('word-list-modal').classList.remove('open');
+      modalOpen = false;
+    }
+
+    function closeWordListOnOverlay(e) {
+      if (e.target === e.currentTarget) closeWordList();
+    }
+
+    function selectWord(index) {
+      currentWordIndex = index;
+      currentLetterIndex = -1;
+      closeWordList();
+      renderWord();
+    }
+
+    function renderWordList() {
+      const body = document.getElementById('word-list-body');
+      if (words.length === 0) {
+        body.innerHTML = '<div class="word-list-empty">Aucun mot dans la liste</div>';
+        return;
+      }
+      body.innerHTML = '';
+      words.forEach((word, i) => {
+        const item = document.createElement('div');
+        item.className = 'word-item';
+        item.innerHTML = `
+          <span class="word-item-text" onclick="selectWord(${i})">${word}</span>
+          <button class="word-item-delete" onclick="removeWord(${i})">&times;</button>
+        `;
+        body.appendChild(item);
+      });
+    }
+
+    function addWord() {
+      const input = document.getElementById('new-word-input');
+      const word = input.value.trim().toLowerCase();
+      if (!word) return;
+      if (words.includes(word)) { input.value = ''; return; }
+      words.push(word);
+      saveWords();
+      input.value = '';
+      renderWordList();
+      renderWord();
+    }
+
+    function removeWord(index) {
+      words.splice(index, 1);
+      saveWords();
+      renderWordList();
+      renderWord();
+    }
+
+    function resetWords() {
+      words = [...DEFAULT_WORDS];
+      currentWordIndex = 0;
+      saveWords();
+      renderWordList();
+      renderWord();
+    }
+
+    // Allow Enter key in input
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('new-word-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addWord();
+      });
+    });
+
+    // --- Navigation ---
+    function showView(view) {
+      currentView = view;
+      document.getElementById('alphabet-view').classList.toggle('active', view === 'alphabet');
+      document.getElementById('words-view').classList.toggle('active', view === 'words');
+      document.getElementById('btn-alphabet').classList.toggle('active', view === 'alphabet');
+      document.getElementById('btn-words').classList.toggle('active', view === 'words');
+    }
+
+    // --- Keyboard navigation ---
+    document.addEventListener('keydown', (e) => {
+      // Skip when modal is open or typing in an input
+      if (modalOpen || e.target.tagName === 'INPUT') return;
+      if (currentView !== 'words' || words.length === 0) return;
+
+      const word = words[currentWordIndex];
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          if (currentLetterIndex > 0) {
+            currentLetterIndex--;
+          } else {
+            currentLetterIndex = 0;
+          }
+          renderWord();
+          break;
+
+        case 'ArrowRight':
+          e.preventDefault();
+          if (currentLetterIndex < word.length - 1) {
+            currentLetterIndex++;
+          }
+          renderWord();
+          break;
+
+        case ' ':
+          e.preventDefault();
+          if (currentLetterIndex >= 0 && currentLetterIndex < word.length) {
+            speak(word[currentLetterIndex].toLowerCase());
+          }
+          break;
+
+        case 'Enter':
+          e.preventDefault();
+          speakWord();
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          prevWord();
+          break;
+
+        case 'ArrowDown':
+          e.preventDefault();
+          nextWord();
+          break;
+      }
+    });
+
+    function setFontStyle(style) {
+      document.body.setAttribute('data-font-style', style);
+      document.getElementById('btn-upper').classList.toggle('active', style === 'uppercase');
+      document.getElementById('btn-lower').classList.toggle('active', style === 'lowercase');
+      document.getElementById('btn-cursive').classList.toggle('active', style === 'cursive');
+    }
+
+    // --- Init ---
+    buildAlphabet();
+    renderWord();
+  </script>
+</body>
+</html>
