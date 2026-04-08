@@ -6,474 +6,571 @@
   <title>AlphaBébé</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playwrite+FR+Trad:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: system-ui, sans-serif;
-      background: #fafafa;
-      color: #333;
-      touch-action: manipulation;
-      -webkit-user-select: none;
-      user-select: none;
+      font-family: 'Lexend', sans-serif;
+      background: #91f78e;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
-    }
-
-    /* --- Nav bar --- */
-    nav {
-      display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: #fff;
-      border-bottom: 2px solid #eee;
-      flex-shrink: 0;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .nav-group {
-      display: flex;
-      gap: 6px;
-    }
-
-    nav button {
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 8px 16px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      background: #fff;
-      color: #555;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    nav button.active {
-      background: #333;
-      color: #fff;
-      border-color: #333;
-    }
-
-    nav button:active {
-      transform: scale(0.95);
-    }
-
-    /* --- Views --- */
-    .view {
-      display: none;
-      flex: 1;
-      padding: 16px;
-    }
-
-    .view.active {
-      display: flex;
-    }
-
-    /* --- Alphabet grid --- */
-    #alphabet-view {
-      align-items: start;
-    }
-
-    .alphabet-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 12px;
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0;
       width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 1.75rem;
     }
 
-    .tile {
-      aspect-ratio: 1;
+    .nav-brand {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a3a1a;
+    }
+
+    .btn-menu {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: transform 0.1s, opacity 0.1s;
-      min-height: 80px;
+      color: #1a3a1a;
+      transition: transform 0.15s, opacity 0.15s;
     }
+    .btn-menu:active { transform: scale(0.88); opacity: 0.7; }
 
-    .tile:active {
-      transform: scale(0.92);
-      opacity: 0.8;
-    }
-
-    .tile .letter {
-      font-size: 3rem;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1;
-    }
-
-    /* --- Words view --- */
-    #words-view {
+    /* ── Main ── */
+    main {
+      flex: 1;
+      width: 100%;
+      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
+      padding: 5rem 1rem 10rem;
+      gap: 2rem;
     }
 
-    .word-display {
+    /* ── Letter cards ── */
+    .word-cards {
       display: flex;
+      gap: clamp(6px, 2.5vw, 20px);
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      overflow: visible;
+      padding: 2.5rem 1rem;
+    }
+
+    .letter-card {
+      background: #fff;
+      border-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(26, 58, 26, 0.18);
+      cursor: pointer;
+      width: clamp(65px, 17vw, 190px);
+      height: clamp(85px, 22vw, 250px);
+      flex-shrink: 0;
+      transition: box-shadow 0.25s, scale 0.25s;
+      scale: 1;
+    }
+
+    .letter-card.highlighted {
+      box-shadow: 0 0 0 5px #fff, 0 0 0 9px rgba(26,58,26,0.5), 0 8px 32px rgba(26,58,26,0.25);
+      scale: 1.12;
+      z-index: 10;
+    }
+
+    .letter-card:active { opacity: 0.82; }
+
+    .letter-card .ltr {
+      font-size: clamp(2.8rem, 10vw, 11rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* ── Float animations ── */
+    @keyframes float-1 {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50%       { transform: translateY(-15px) rotate(-2deg); }
+    }
+    @keyframes float-2 {
+      0%, 100% { transform: translateY(0) rotate(5deg); }
+      50%       { transform: translateY(-25px) rotate(8deg); }
+    }
+    @keyframes float-3 {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%       { transform: translateY(-20px) rotate(-5deg); }
+    }
+    @keyframes float-4 {
+      0%, 100% { transform: translateY(0) rotate(3deg); }
+      50%       { transform: translateY(-30px) rotate(1deg); }
+    }
+
+    .float-1 { animation: float-1 4s   ease-in-out infinite; }
+    .float-2 { animation: float-2 4.5s ease-in-out infinite; }
+    .float-3 { animation: float-3 3.5s ease-in-out infinite; }
+    .float-4 { animation: float-4 5s   ease-in-out infinite; }
+
+    /* ── Word image ── */
+    .word-image-wrap {
+      width: clamp(120px, 32vw, 220px);
+      aspect-ratio: 1;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(26,58,26,0.2);
+      border: 6px solid #fff;
+      transform: rotate(3deg);
+      transition: transform 0.5s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .word-image-wrap:hover  { transform: rotate(0deg); }
+    .word-image-wrap:active { transform: scale(0.94) rotate(0deg); }
+    .word-image-wrap img    { width: 100%; height: 100%; object-fit: cover; }
+    .word-image-wrap.hidden { display: none; }
+
+    /* ── Word counter ── */
+    .word-count {
+      font-size: 0.85rem;
+      color: rgba(0, 80, 16, 0.65);
+      font-weight: 600;
+    }
+
+    /* ── Bottom bar ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0 1.5rem;
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+
+    .btn-next {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 1.25rem 2.5rem;
+      width: 100%;
+      max-width: 26rem;
+      font-family: 'Lexend', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(220, 38, 38, 0.35);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .btn-next:hover  { background: #b91c1c; }
+    .btn-next:active { transform: scale(0.96); }
+
+    /* ── Keyboard hints ── */
+    .kbd-hints {
+      display: none;
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
+      gap: 0.875rem;
+      padding-bottom: 0.5rem;
+    }
+    @media (min-width: 640px) { .kbd-hints { display: flex; } }
+
+    .kbd-hint {
+      display: flex;
+      align-items: center;
       gap: 4px;
-      cursor: pointer;
-      padding: 16px;
-      border-radius: 20px;
-      transition: gap 0.3s, transform 0.1s, opacity 0.1s;
+      font-size: 0.75rem;
+      color: rgba(0, 80, 16, 0.7);
+      font-weight: 500;
     }
 
-    .word-display:not(.decomposed):active {
-      transform: scale(0.95);
-      opacity: 0.8;
+    kbd {
+      background: #f5f4e7;
+      border: 1px solid rgba(129,129,119,0.25);
+      border-radius: 6px;
+      padding: 1px 7px;
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.72rem;
+      color: #373830;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
     }
 
-    .word-display.decomposed {
-      gap: clamp(16px, 5vw, 40px);
-      cursor: default;
-    }
-
-    .word-display .letter {
-      font-size: clamp(4rem, 12vw, 8rem);
-      font-weight: 700;
-      line-height: 1.1;
-      transition: transform 0.1s, opacity 0.1s;
-    }
-
-    .word-display.decomposed .letter {
-      cursor: pointer;
-      border-radius: 12px;
-    }
-
-    .word-display.decomposed .letter:active {
-      transform: scale(0.9);
-      opacity: 0.7;
-    }
-
-    .word-display .letter.highlighted {
-      background: rgba(0, 0, 0, 0.08);
-      border-radius: 12px;
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-      transform: scale(1.1);
-    }
-
-    .word-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .word-actions button {
-      font-size: 1.5rem;
-      width: 52px;
-      height: 52px;
-      border: 2px solid #ddd;
-      border-radius: 50%;
-      background: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.1s;
-    }
-
-    .word-actions button:active {
-      transform: scale(0.9);
-    }
-
-    .word-actions button.active {
-      background: #333;
-      border-color: #333;
-    }
-
-    .word-nav {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .word-nav button {
-      font-size: 2rem;
-      width: 56px;
-      height: 56px;
-      border: 2px solid #ddd;
-      border-radius: 50%;
-      background: #fff;
-      color: #555;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.1s;
-    }
-
-    .word-nav button:active {
-      transform: scale(0.9);
-    }
-
-    .word-nav button:disabled {
-      opacity: 0.3;
-      cursor: default;
-    }
-
-    .word-counter {
-      font-size: 1.2rem;
-      color: #999;
-      font-weight: 600;
-      min-width: 60px;
+    /* ── Empty state ── */
+    .empty-state {
+      color: rgba(0, 80, 16, 0.55);
+      font-size: 1rem;
       text-align: center;
+      padding: 1rem;
+      max-width: 260px;
+      line-height: 1.5;
     }
 
-    /* --- Font style modes --- */
-    body[data-font-style="uppercase"] .letter {
-      text-transform: uppercase;
-      font-family: system-ui, sans-serif;
-    }
-
-    body[data-font-style="lowercase"] .letter {
-      text-transform: lowercase;
-      font-family: system-ui, sans-serif;
-    }
-
-    body[data-font-style="cursive"] .letter {
-      text-transform: lowercase;
-      font-family: 'Playwrite FR Trad', cursive;
-    }
-
-    /* Cursive needs size adjustments */
-    body[data-font-style="cursive"] .tile .letter {
-      font-size: 2.2rem;
-    }
-
-    body[data-font-style="cursive"] .word-display .letter {
-      font-size: clamp(3rem, 9vw, 6rem);
-    }
-
-    /* --- Word list modal --- */
+    /* ── Modal overlay ── */
     .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(26, 58, 26, 0.35);
       z-index: 100;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      padding: 16px;
+      padding: 1rem;
+      backdrop-filter: blur(6px);
     }
-
-    .modal-overlay.open {
-      display: flex;
-    }
+    @media (min-width: 640px) { .modal-overlay { align-items: center; } }
+    .modal-overlay.open { display: flex; }
 
     .modal {
-      background: #fff;
-      border-radius: 20px;
+      background: #fefdf1;
+      border-radius: 2rem;
       width: 100%;
       max-width: 480px;
-      max-height: 85dvh;
+      max-height: 88dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      box-shadow: 0 20px 48px rgba(26, 58, 26, 0.18);
     }
 
     .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 2px solid #eee;
+      padding: 1.25rem 1.5rem 1rem;
     }
 
     .modal-header h2 {
       font-size: 1.2rem;
+      font-weight: 700;
+      color: #1a3a1a;
     }
 
-    .modal-close {
-      font-size: 1.5rem;
-      width: 40px;
-      height: 40px;
+    .btn-modal-close {
+      background: #e9e9da;
       border: none;
-      background: #f0f0f0;
       border-radius: 50%;
+      width: 36px;
+      height: 36px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #555;
-    }
-
-    .modal-close:active {
-      transform: scale(0.9);
-    }
-
-    .modal-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 20px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .word-list-add {
-      display: flex;
-      gap: 8px;
-      padding: 16px 20px;
-      border-bottom: 2px solid #eee;
-    }
-
-    .word-list-add input {
-      flex: 1;
+      color: #373830;
       font-size: 1.1rem;
-      padding: 10px 14px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
+      transition: transform 0.1s;
+    }
+    .btn-modal-close:active { transform: scale(0.88); }
+
+    /* ── Add word form ── */
+    .modal-add {
+      padding: 0 1.25rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+    }
+
+    .modal-add input[type="text"] {
+      width: 100%;
+      font-family: 'Lexend', sans-serif;
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 1rem;
+      background: #f5f4e7;
+      color: #373830;
       outline: none;
-      font-family: system-ui, sans-serif;
       -webkit-user-select: text;
       user-select: text;
     }
+    .modal-add input[type="text"]:focus { background: #eeeedd; }
 
-    .word-list-add input:focus {
-      border-color: #457B9D;
+    .image-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .word-list-add button {
-      font-size: 1.1rem;
-      font-weight: 600;
-      padding: 10px 18px;
+    .btn-pick-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f5f4e7;
       border: none;
-      border-radius: 12px;
-      background: #2D936C;
-      color: #fff;
+      border-radius: 1rem;
+      padding: 0.65rem 1rem;
       cursor: pointer;
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.875rem;
+      color: #64655c;
+      transition: background 0.15s;
+      text-align: left;
+      min-width: 0;
+    }
+    .btn-pick-image:hover { background: #eeeedd; }
+    .btn-pick-image.has-image { background: #d0f0ce; color: #00600e; }
+    .btn-pick-image svg { flex-shrink: 0; }
+    .btn-pick-image span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    input[type="file"] { display: none; }
+
+    /* ── Tooltip ── */
+    .tooltip-wrap {
+      position: relative;
+      flex-shrink: 0;
     }
 
-    .word-list-add button:active {
-      transform: scale(0.95);
+    .tooltip-icon {
+      width: 24px;
+      height: 24px;
+      background: rgba(26, 58, 26, 0.2);
+      border-radius: 50%;
+      border: none;
+      color: #1a3a1a;
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: 'Lexend', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .tooltip-text {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      right: 0;
+      background: #373830;
+      color: #fff;
+      font-size: 0.75rem;
+      font-family: 'Lexend', sans-serif;
+      font-weight: 400;
+      padding: 0.6rem 0.875rem;
+      border-radius: 0.875rem;
+      width: 220px;
+      line-height: 1.45;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .tooltip-text::after {
+      content: '';
+      position: absolute;
+      top: 100%; right: 8px;
+      border: 6px solid transparent;
+      border-top-color: #373830;
+    }
+
+    .tooltip-wrap:hover .tooltip-text,
+    .tooltip-wrap.open .tooltip-text { display: block; }
+
+    /* ── Add button ── */
+    .btn-add-word {
+      background: #00751f;
+      color: #fff;
+      border: none;
+      border-radius: 1rem;
+      padding: 0.7rem 1.1rem;
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.1s, background 0.1s;
+      flex-shrink: 0;
+    }
+    .btn-add-word:hover  { background: #005e17; }
+    .btn-add-word:active { transform: scale(0.94); }
+
+    /* ── Word list ── */
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 1.25rem;
+      -webkit-overflow-scrolling: touch;
     }
 
     .word-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f0f0;
+      gap: 0.625rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid #f0efe0;
+    }
+    .word-item:last-child { border-bottom: none; }
+
+    .word-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: 0.5rem;
+      object-fit: cover;
+      flex-shrink: 0;
     }
 
-    .word-item:last-child {
-      border-bottom: none;
+    .word-thumb-empty {
+      width: 36px;
+      height: 36px;
+      border-radius: 0.5rem;
+      background: #e9e9da;
+      flex-shrink: 0;
     }
 
     .word-item-text {
-      font-size: 1.1rem;
-      font-weight: 500;
-      cursor: pointer;
       flex: 1;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #373830;
+      cursor: pointer;
       padding: 4px 0;
     }
+    .word-item-text:active { opacity: 0.55; }
 
-    .word-item-text:active {
-      opacity: 0.6;
-    }
-
-    .word-item-delete {
-      width: 36px;
-      height: 36px;
+    .btn-delete {
+      width: 32px;
+      height: 32px;
       border: none;
-      background: #fee;
+      background: rgba(196, 31, 25, 0.1);
       border-radius: 50%;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      color: #E63946;
+      color: #c41f19;
+      font-size: 1rem;
       flex-shrink: 0;
+      transition: transform 0.1s, background 0.1s;
     }
-
-    .word-item-delete:active {
-      transform: scale(0.9);
-      background: #fcc;
-    }
-
-    .modal-footer {
-      padding: 12px 20px;
-      border-top: 2px solid #eee;
-      text-align: center;
-    }
-
-    .btn-reset {
-      font-size: 0.9rem;
-      padding: 8px 16px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      background: #fff;
-      color: #999;
-      cursor: pointer;
-    }
-
-    .btn-reset:active {
-      transform: scale(0.95);
-    }
+    .btn-delete:active { transform: scale(0.88); background: rgba(196,31,25,0.2); }
 
     .word-list-empty {
       text-align: center;
-      padding: 32px 0;
-      color: #999;
-      font-size: 1rem;
+      padding: 2rem 0;
+      color: #818177;
+      font-size: 0.9rem;
     }
+
+    .modal-footer {
+      padding: 0.875rem 1.25rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-reset {
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.825rem;
+      padding: 0.5rem 1rem;
+      border: 1.5px solid #babaaf;
+      border-radius: 0.75rem;
+      background: transparent;
+      color: #818177;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .btn-reset:active { transform: scale(0.95); }
   </style>
 </head>
-<body data-font-style="cursive">
+<body>
 
   <nav>
-    <div class="nav-group">
-      <button id="btn-alphabet" onclick="showView('alphabet')">Alphabet</button>
-      <button id="btn-words" class="active" onclick="showView('words')">Mots</button>
-    </div>
-    <div class="nav-group">
-      <button id="btn-upper" onclick="setFontStyle('uppercase')">ABC</button>
-      <button id="btn-lower" onclick="setFontStyle('lowercase')">abc</button>
-      <button id="btn-cursive" class="active" onclick="setFontStyle('cursive')">cursive</button>
-    </div>
+    <span class="nav-brand">Bravo&nbsp;!</span>
+    <button class="btn-menu" onclick="openWordList()" title="Gérer les mots">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
   </nav>
 
-  <div id="alphabet-view" class="view">
-    <div class="alphabet-grid" id="alphabet-grid"></div>
+  <main>
+    <div class="word-cards" id="word-cards"></div>
+    <div class="word-image-wrap hidden" id="word-image-wrap" onclick="speakWord()">
+      <img id="word-image" src="" alt="">
+    </div>
+    <div class="word-count" id="word-count"></div>
+  </main>
+
+  <div class="bottom-bar">
+    <button class="btn-next" onclick="nextWord()">
+      <span>Suivant</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </button>
+    <div class="kbd-hints">
+      <div class="kbd-hint"><kbd>Espace</kbd> Suivant</div>
+      <div class="kbd-hint"><kbd>L</kbd> Lire lettre</div>
+      <div class="kbd-hint"><kbd>M</kbd> Lire mot</div>
+      <div class="kbd-hint"><kbd>← →</kbd> Naviguer</div>
+      <div class="kbd-hint"><kbd>I</kbd> Image</div>
+    </div>
   </div>
 
-  <div id="words-view" class="view active">
-    <div class="word-display" id="word-display"></div>
-    <div class="word-actions">
-      <button id="btn-speak-word" onclick="speakWord()" title="Lire le mot">&#x1F50A;</button>
-      <button id="btn-decompose" onclick="toggleDecompose()" title="Décomposer">&#x2194;</button>
-    </div>
-    <div class="word-nav">
-      <button onclick="prevWord()">&#9664;</button>
-      <span class="word-counter" id="word-counter"></span>
-      <button onclick="nextWord()">&#9654;</button>
-    </div>
-    <button onclick="openWordList()" style="margin-top:12px;font-size:1rem;font-weight:600;padding:10px 20px;border:2px solid #ddd;border-radius:12px;background:#fff;color:#555;cursor:pointer;">Liste des mots</button>
-  </div>
-
-  <div class="modal-overlay" id="word-list-modal" onclick="closeWordListOnOverlay(event)">
+  <!-- Gestion des mots -->
+  <div class="modal-overlay" id="word-modal" onclick="closeModalOnOverlay(event)">
     <div class="modal">
       <div class="modal-header">
         <h2>Liste des mots</h2>
-        <button class="modal-close" onclick="closeWordList()">&times;</button>
+        <button class="btn-modal-close" onclick="closeWordList()">✕</button>
       </div>
-      <div class="word-list-add">
+
+      <div class="modal-add">
         <input type="text" id="new-word-input" placeholder="Nouveau mot..." autocapitalize="none" autocomplete="off">
-        <button onclick="addWord()">Ajouter</button>
+        <div class="image-row">
+          <label class="btn-pick-image" id="image-label" for="image-file-input">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span id="image-label-text">Image (optionnel)</span>
+          </label>
+          <input type="file" id="image-file-input" accept="image/*">
+
+          <div class="tooltip-wrap" id="tooltip-wrap">
+            <button class="tooltip-icon" onclick="toggleTooltip(event)" type="button">?</button>
+            <div class="tooltip-text">
+              Trouvez des images gratuites sur <strong>flaticon.com</strong> — téléchargez l'image sur votre appareil, puis ajoutez-la ici.
+            </div>
+          </div>
+
+          <button class="btn-add-word" onclick="addWord()">Ajouter</button>
+        </div>
       </div>
+
       <div class="modal-body" id="word-list-body"></div>
+
       <div class="modal-footer">
         <button class="btn-reset" onclick="resetWords()">Remettre les mots par défaut</button>
       </div>
@@ -481,36 +578,30 @@
   </div>
 
   <script>
-    // --- Default word list (easy French words for 3-4 year olds) ---
+    // ── Données par défaut ──
     const DEFAULT_WORDS = [
-      // 2-3 letters
-      'le', 'la', 'un', 'il', 'tu', 'on', 'ami', 'eau', 'rue', 'lit',
-      'bus', 'sac', 'rat', 'roi', 'mot', 'dos', 'riz',
-      // 4 letters
-      'chat', 'lune', 'papa', 'mama', 'bébé', 'dame', 'jupe', 'lait',
-      'loup', 'noix', 'ours', 'pied', 'robe', 'rose', 'vélo',
-      // 5+ letters
-      'arbre', 'avion', 'maison', 'livre', 'table', 'pomme', 'lapin',
-      'soleil', 'banane', 'souris'
+      { text: 'lion',   image: null },
+      { text: 'chat',   image: null },
+      { text: 'chien',  image: null },
+      { text: 'lune',   image: null },
+      { text: 'papa',   image: null },
+      { text: 'mama',   image: null },
+      { text: 'bébé',   image: null },
+      { text: 'arbre',  image: null },
+      { text: 'avion',  image: null },
+      { text: 'maison', image: null },
+      { text: 'pomme',  image: null },
+      { text: 'lapin',  image: null },
+      { text: 'soleil', image: null },
+      { text: 'banane', image: null },
+      { text: 'souris', image: null },
+      { text: 'vélo',   image: null },
+      { text: 'ours',   image: null },
+      { text: 'rose',   image: null },
     ];
 
-    const STORAGE_KEY = 'alphabebe-words';
+    const STORAGE_KEY = 'alphabebe-words-v2';
 
-    function loadWords() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-      }
-      return [...DEFAULT_WORDS];
-    }
-
-    function saveWords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-    }
-
-    let words = loadWords();
-
-    // --- Letter colors ---
     const COLORS = {
       a: '#E63946', b: '#457B9D', c: '#F4A261', d: '#7B2D8E',
       e: '#2D936C', f: '#E91E8C', g: '#0B7A75', h: '#FF6B6B',
@@ -521,133 +612,221 @@
       y: '#E9C46A', z: '#FF5733'
     };
 
-    // --- State ---
+    const FLOAT_CLASSES = ['float-1', 'float-2', 'float-3', 'float-4'];
+
+    // ── État ──
+    let words = [];
     let currentWordIndex = 0;
     let currentLetterIndex = -1;
-    let decomposed = false;
-    let voices = [];
-    let currentView = 'words';
+    let imageVisible = true;
+    let pendingImage = null;
     let modalOpen = false;
+    let voices = [];
 
-    // --- Accent normalization ---
+    // ── Chargement ──
+    function loadWords() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Compatibilité avec l'ancien format (chaînes simples)
+          return parsed.map(w => typeof w === 'string' ? { text: w, image: null } : w);
+        } catch (e) { /* ignoré */ }
+      }
+      return DEFAULT_WORDS.map(w => ({ ...w }));
+    }
+
+    function saveWords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    }
+
+    // ── Couleurs ──
     function baseChar(c) {
       return c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     }
 
     function colorFor(c) {
-      return COLORS[baseChar(c)] || '#999';
+      return COLORS[baseChar(c)] || '#64655c';
     }
 
-    // --- Speech ---
-    function loadVoices() {
+    // ── Synthèse vocale ──
+    speechSynthesis.addEventListener('voiceschanged', () => {
       voices = speechSynthesis.getVoices();
-    }
-
-    speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    loadVoices();
+    });
+    voices = speechSynthesis.getVoices();
 
     function speak(text) {
       speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 0.85;
-      const frenchVoice = voices.find(v => v.lang.startsWith('fr'));
-      if (frenchVoice) utterance.voice = frenchVoice;
-      speechSynthesis.speak(utterance);
-    }
-
-    // --- Alphabet grid ---
-    function buildAlphabet() {
-      const grid = document.getElementById('alphabet-grid');
-      for (let i = 0; i < 26; i++) {
-        const letter = String.fromCharCode(97 + i); // a-z
-        const tile = document.createElement('div');
-        tile.className = 'tile';
-        tile.style.backgroundColor = COLORS[letter];
-        tile.innerHTML = `<span class="letter">${letter}</span>`;
-        tile.addEventListener('click', () => speak(letter));
-        grid.appendChild(tile);
-      }
-    }
-
-    // --- Words view ---
-    function renderWord() {
-      const display = document.getElementById('word-display');
-      display.classList.toggle('decomposed', decomposed);
-      display.onclick = decomposed ? null : speakWord;
-      if (words.length === 0) {
-        display.innerHTML = '<span style="color:#999;font-size:1.2rem;">Aucun mot</span>';
-        document.getElementById('word-counter').textContent = '0 / 0';
-        currentLetterIndex = -1;
-        return;
-      }
-      if (currentWordIndex >= words.length) currentWordIndex = words.length - 1;
-      const word = words[currentWordIndex];
-      if (currentLetterIndex >= word.length) currentLetterIndex = word.length - 1;
-      display.innerHTML = '';
-      for (let i = 0; i < word.length; i++) {
-        const char = word[i];
-        const span = document.createElement('span');
-        span.className = 'letter';
-        if (i === currentLetterIndex) span.classList.add('highlighted');
-        span.textContent = char;
-        span.style.color = colorFor(char);
-        if (decomposed) {
-          const c = char.toLowerCase();
-          span.addEventListener('click', () => speak(c));
-        }
-        display.appendChild(span);
-      }
-      document.getElementById('word-counter').textContent =
-        `${currentWordIndex + 1} / ${words.length}`;
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR';
+      utt.rate = 0.85;
+      const frVoice = voices.find(v => v.lang.startsWith('fr'));
+      if (frVoice) utt.voice = frVoice;
+      speechSynthesis.speak(utt);
     }
 
     function speakWord() {
-      if (words.length > 0) speak(words[currentWordIndex]);
+      if (words.length > 0) speak(words[currentWordIndex].text);
     }
 
-    function toggleDecompose() {
-      decomposed = !decomposed;
-      document.getElementById('btn-decompose').classList.toggle('active', decomposed);
+    function speakCurrentLetter() {
+      if (words.length === 0) return;
+      const text = words[currentWordIndex].text;
+      const idx = currentLetterIndex >= 0 ? currentLetterIndex : 0;
+      if (idx < text.length) speak(text[idx].toLowerCase());
+    }
+
+    // ── Affichage ──
+    let renderedWordIndex = -1; // track which word is currently in the DOM
+
+    function renderWord() {
+      const container = document.getElementById('word-cards');
+
+      if (words.length === 0) {
+        container.innerHTML = '<p class="empty-state">Aucun mot — ouvrez le menu pour en ajouter&nbsp;!</p>';
+        document.getElementById('word-image-wrap').classList.add('hidden');
+        document.getElementById('word-count').textContent = '';
+        renderedWordIndex = -1;
+        return;
+      }
+
+      if (currentWordIndex >= words.length) currentWordIndex = words.length - 1;
+      const word = words[currentWordIndex];
+
+      // Only rebuild DOM when the word itself changed
+      if (renderedWordIndex !== currentWordIndex) {
+        container.innerHTML = '';
+
+        word.text.split('').forEach((ch, i) => {
+          const card = document.createElement('div');
+          card.className = `letter-card ${FLOAT_CLASSES[i % 4]}`;
+
+          const span = document.createElement('span');
+          span.className = 'ltr';
+          span.textContent = ch.toUpperCase();
+          span.style.color = colorFor(ch);
+
+          card.appendChild(span);
+          card.addEventListener('click', () => {
+            currentLetterIndex = i;
+            speak(ch.toLowerCase());
+            updateHighlight();
+          });
+          container.appendChild(card);
+        });
+
+        renderedWordIndex = currentWordIndex;
+      }
+
+      updateHighlight();
+
+      // Image
+      const imgWrap = document.getElementById('word-image-wrap');
+      const img = document.getElementById('word-image');
+      if (word.image && imageVisible) {
+        img.src = word.image;
+        img.alt = word.text;
+        imgWrap.classList.remove('hidden');
+      } else {
+        imgWrap.classList.add('hidden');
+      }
+
+      document.getElementById('word-count').textContent =
+        `${currentWordIndex + 1} / ${words.length}`;
+    }
+
+    function updateHighlight() {
+      const cards = document.getElementById('word-cards').querySelectorAll('.letter-card');
+      cards.forEach((card, i) => {
+        card.classList.toggle('highlighted', i === currentLetterIndex);
+      });
+    }
+
+    // ── Navigation ──
+    function nextWord() {
+      if (words.length === 0) return;
+      currentWordIndex = (currentWordIndex + 1) % words.length;
+      currentLetterIndex = -1;
       renderWord();
     }
 
     function prevWord() {
-      if (currentWordIndex > 0) {
-        currentWordIndex--;
-        currentLetterIndex = -1;
-        renderWord();
-      }
+      if (words.length === 0) return;
+      currentWordIndex = (currentWordIndex - 1 + words.length) % words.length;
+      currentLetterIndex = -1;
+      renderWord();
     }
 
-    function nextWord() {
-      if (currentWordIndex < words.length - 1) {
-        currentWordIndex++;
-        currentLetterIndex = -1;
-        renderWord();
-      }
-    }
+    // ── Sélection d'image ──
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('image-file-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) { pendingImage = null; return; }
 
-    // --- Word list management ---
-    function openWordList() {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          pendingImage = evt.target.result; // stockage en base64
+          const label = document.getElementById('image-label');
+          const labelText = document.getElementById('image-label-text');
+          const name = file.name.length > 22 ? file.name.slice(0, 20) + '…' : file.name;
+          labelText.textContent = name;
+          label.classList.add('has-image');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.getElementById('new-word-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addWord();
+      });
+    });
+
+    // ── Gestion des mots ──
+    function addWord() {
+      const input = document.getElementById('new-word-input');
+      const text = input.value.trim().toLowerCase();
+      if (!text) return;
+      if (words.some(w => w.text === text)) {
+        input.value = '';
+        return;
+      }
+
+      words.push({ text, image: pendingImage });
+      saveWords();
+      resetAddForm();
       renderWordList();
-      document.getElementById('word-list-modal').classList.add('open');
-      modalOpen = true;
+      renderWord();
     }
 
-    function closeWordList() {
-      document.getElementById('word-list-modal').classList.remove('open');
-      modalOpen = false;
+    function resetAddForm() {
+      document.getElementById('new-word-input').value = '';
+      document.getElementById('image-file-input').value = '';
+      document.getElementById('image-label-text').textContent = 'Image (optionnel)';
+      document.getElementById('image-label').classList.remove('has-image');
+      pendingImage = null;
     }
 
-    function closeWordListOnOverlay(e) {
-      if (e.target === e.currentTarget) closeWordList();
+    function removeWord(index) {
+      words.splice(index, 1);
+      if (currentWordIndex >= words.length) currentWordIndex = Math.max(0, words.length - 1);
+      renderedWordIndex = -1; // force full rebuild
+      saveWords();
+      renderWordList();
+      renderWord();
     }
 
     function selectWord(index) {
       currentWordIndex = index;
       currentLetterIndex = -1;
       closeWordList();
+      renderWord();
+    }
+
+    function resetWords() {
+      words = DEFAULT_WORDS.map(w => ({ ...w }));
+      currentWordIndex = 0;
+      currentLetterIndex = -1;
+      saveWords();
+      renderWordList();
       renderWord();
     }
 
@@ -658,120 +837,112 @@
         return;
       }
       body.innerHTML = '';
-      words.forEach((word, i) => {
+      words.forEach((w, i) => {
         const item = document.createElement('div');
         item.className = 'word-item';
-        item.innerHTML = `
-          <span class="word-item-text" onclick="selectWord(${i})">${word}</span>
-          <button class="word-item-delete" onclick="removeWord(${i})">&times;</button>
-        `;
+
+        if (w.image) {
+          const thumb = document.createElement('img');
+          thumb.className = 'word-thumb';
+          thumb.src = w.image;
+          thumb.alt = w.text;
+          item.appendChild(thumb);
+        } else {
+          const ph = document.createElement('div');
+          ph.className = 'word-thumb-empty';
+          item.appendChild(ph);
+        }
+
+        const label = document.createElement('span');
+        label.className = 'word-item-text';
+        label.textContent = w.text;
+        label.onclick = () => selectWord(i);
+        item.appendChild(label);
+
+        const del = document.createElement('button');
+        del.className = 'btn-delete';
+        del.textContent = '✕';
+        del.onclick = () => removeWord(i);
+        item.appendChild(del);
+
         body.appendChild(item);
       });
     }
 
-    function addWord() {
-      const input = document.getElementById('new-word-input');
-      const word = input.value.trim().toLowerCase();
-      if (!word) return;
-      if (words.includes(word)) { input.value = ''; return; }
-      words.push(word);
-      saveWords();
-      input.value = '';
+    // ── Modal ──
+    function openWordList() {
       renderWordList();
-      renderWord();
+      document.getElementById('word-modal').classList.add('open');
+      modalOpen = true;
     }
 
-    function removeWord(index) {
-      words.splice(index, 1);
-      saveWords();
-      renderWordList();
-      renderWord();
+    function closeWordList() {
+      document.getElementById('word-modal').classList.remove('open');
+      modalOpen = false;
     }
 
-    function resetWords() {
-      words = [...DEFAULT_WORDS];
-      currentWordIndex = 0;
-      saveWords();
-      renderWordList();
-      renderWord();
+    function closeModalOnOverlay(e) {
+      if (e.target === e.currentTarget) closeWordList();
     }
 
-    // Allow Enter key in input
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('new-word-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') addWord();
-      });
+    // ── Tooltip (mobile : tap pour ouvrir/fermer) ──
+    function toggleTooltip(e) {
+      e.stopPropagation();
+      document.getElementById('tooltip-wrap').classList.toggle('open');
+    }
+
+    document.addEventListener('click', () => {
+      document.getElementById('tooltip-wrap').classList.remove('open');
     });
 
-    // --- Navigation ---
-    function showView(view) {
-      currentView = view;
-      document.getElementById('alphabet-view').classList.toggle('active', view === 'alphabet');
-      document.getElementById('words-view').classList.toggle('active', view === 'words');
-      document.getElementById('btn-alphabet').classList.toggle('active', view === 'alphabet');
-      document.getElementById('btn-words').classList.toggle('active', view === 'words');
-    }
-
-    // --- Keyboard navigation ---
+    // ── Clavier ──
     document.addEventListener('keydown', (e) => {
-      // Skip when modal is open or typing in an input
       if (modalOpen || e.target.tagName === 'INPUT') return;
-      if (currentView !== 'words' || words.length === 0) return;
+      if (words.length === 0) return;
 
-      const word = words[currentWordIndex];
+      const len = words[currentWordIndex].text.length;
 
       switch (e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          if (currentLetterIndex > 0) {
-            currentLetterIndex--;
-          } else {
-            currentLetterIndex = 0;
-          }
-          renderWord();
-          break;
-
-        case 'ArrowRight':
-          e.preventDefault();
-          if (currentLetterIndex < word.length - 1) {
-            currentLetterIndex++;
-          }
-          renderWord();
-          break;
-
         case ' ':
           e.preventDefault();
-          if (currentLetterIndex >= 0 && currentLetterIndex < word.length) {
-            speak(word[currentLetterIndex].toLowerCase());
-          }
+          nextWord();
           break;
-
-        case 'Enter':
+        case 'ArrowRight':
           e.preventDefault();
-          speakWord();
+          currentLetterIndex = currentLetterIndex < len - 1 ? currentLetterIndex + 1 : 0;
+          updateHighlight();
           break;
-
+        case 'ArrowLeft':
+          e.preventDefault();
+          currentLetterIndex = currentLetterIndex > 0 ? currentLetterIndex - 1 : len - 1;
+          updateHighlight();
+          break;
         case 'ArrowUp':
           e.preventDefault();
           prevWord();
           break;
-
         case 'ArrowDown':
           e.preventDefault();
           nextWord();
           break;
+        case 'l': case 'L':
+          e.preventDefault();
+          speakCurrentLetter();
+          break;
+        case 'm': case 'M':
+          e.preventDefault();
+          speakWord();
+          break;
+        case 'i': case 'I':
+          e.preventDefault();
+          imageVisible = !imageVisible;
+          renderWord();
+          break;
       }
     });
 
-    function setFontStyle(style) {
-      document.body.setAttribute('data-font-style', style);
-      document.getElementById('btn-upper').classList.toggle('active', style === 'uppercase');
-      document.getElementById('btn-lower').classList.toggle('active', style === 'lowercase');
-      document.getElementById('btn-cursive').classList.toggle('active', style === 'cursive');
-    }
-
-    // --- Init ---
-    buildAlphabet();
+    // ── Initialisation ──
+    words = loadWords();
     renderWord();
   </script>
 </body>
