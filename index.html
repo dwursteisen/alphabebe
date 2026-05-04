@@ -202,6 +202,7 @@
       padding-bottom: 0.5rem;
     }
     @media (min-width: 640px) { .kbd-hints { display: flex; } }
+    .kbd-hints[hidden] { display: none; }
 
     .kbd-hint {
       display: flex;
@@ -497,43 +498,205 @@
       transition: transform 0.1s;
     }
     .btn-reset:active { transform: scale(0.95); }
+
+    /* ── Mode toggle ── */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-mode {
+      background: #fefdf1;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.45rem 0.95rem;
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1a3a1a;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(26, 58, 26, 0.18);
+      transition: transform 0.15s, background 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .btn-mode:active { transform: scale(0.94); }
+    .btn-mode:hover  { background: #fff; }
+
+    /* ── Views ── */
+    .view-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    .view-section[hidden] { display: none; }
+
+    /* ── Calc row ── */
+    .calc-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(4px, 1.5vw, 14px);
+      flex-wrap: nowrap;
+      width: 100%;
+      padding: 1.5rem 0.25rem;
+    }
+
+    .calc-term {
+      background: #fff;
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(26, 58, 26, 0.18);
+      cursor: pointer;
+      padding: clamp(0.5rem, 2vw, 1rem);
+      min-width: clamp(56px, 14vw, 150px);
+      min-height: clamp(95px, 22vw, 210px);
+      gap: 0.4rem;
+      flex-shrink: 1;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .calc-term:active { transform: scale(0.96); opacity: 0.85; }
+
+    .calc-term.term-hidden {
+      background: #fefdf1;
+      box-shadow: 0 0 0 4px rgba(26,58,26,0.18) inset, 0 8px 24px rgba(26,58,26,0.1);
+    }
+
+    .term-digit {
+      font-size: clamp(2.2rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .term-objects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(2px, 0.4vw, 5px);
+      max-width: clamp(60px, 13vw, 120px);
+      justify-content: center;
+      align-items: center;
+      font-size: clamp(0.9rem, 2.4vw, 1.55rem);
+      line-height: 1;
+    }
+
+    .term-object { flex: 0 0 auto; }
+
+    .calc-op {
+      font-size: clamp(1.6rem, 5.5vw, 4rem);
+      font-weight: 900;
+      color: #1a3a1a;
+      cursor: pointer;
+      padding: 0.2rem;
+      flex-shrink: 0;
+      transition: transform 0.15s, opacity 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .calc-op:active { transform: scale(0.92); opacity: 0.7; }
+
+    /* ── Settings modal ── */
+    .modal-body-padded {
+      padding: 0.25rem 1.5rem 1.5rem;
+    }
+
+    .settings-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      padding: 0.875rem 0;
+      border-bottom: 1px solid #f0efe0;
+    }
+    .settings-group:last-child { border-bottom: none; }
+
+    .settings-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1a3a1a;
+    }
+
+    .settings-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip {
+      background: #f5f4e7;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.55rem 1rem;
+      font-family: 'Lexend', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64655c;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, color 0.15s;
+    }
+    .chip:active { transform: scale(0.94); }
+    .chip:hover  { background: #eeeedd; }
+    .chip.active {
+      background: #00751f;
+      color: #fff;
+    }
+    .chip.active:hover { background: #005e17; }
   </style>
 </head>
 <body>
 
   <nav>
-    <span class="nav-brand">Bravo&nbsp;!</span>
-    <button class="btn-menu" onclick="openWordList()" title="Gérer les mots">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
+    <span class="nav-brand" id="nav-brand">Bravo&nbsp;!</span>
+    <div class="nav-actions">
+      <button class="btn-mode" onclick="toggleMode()" title="Changer de mode">
+        <span id="mode-icon">123</span>
+      </button>
+      <button class="btn-menu" onclick="openMenu()" title="Menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
   </nav>
 
   <main>
-    <div class="word-cards" id="word-cards"></div>
-    <div class="word-image-wrap hidden" id="word-image-wrap" onclick="speakWord()">
-      <img id="word-image" src="" alt="">
+    <div class="view-section" id="letters-view">
+      <div class="word-cards" id="word-cards"></div>
+      <div class="word-image-wrap hidden" id="word-image-wrap" onclick="speakWord()">
+        <img id="word-image" src="" alt="">
+      </div>
+      <div class="word-count" id="word-count"></div>
     </div>
-    <div class="word-count" id="word-count"></div>
+
+    <div class="view-section" id="numbers-view" hidden>
+      <div class="calc-row" id="calc-row"></div>
+    </div>
   </main>
 
   <div class="bottom-bar">
-    <button class="btn-next" onclick="nextWord()">
+    <button class="btn-next" onclick="goNext()">
       <span>Suivant</span>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
     </button>
-    <div class="kbd-hints">
+    <div class="kbd-hints" id="kbd-hints-letters">
       <div class="kbd-hint"><kbd>Espace</kbd> Suivant</div>
       <div class="kbd-hint"><kbd>L</kbd> Lire lettre</div>
       <div class="kbd-hint"><kbd>M</kbd> Lire mot</div>
       <div class="kbd-hint"><kbd>← →</kbd> Naviguer</div>
       <div class="kbd-hint"><kbd>I</kbd> Image</div>
+    </div>
+    <div class="kbd-hints" id="kbd-hints-numbers" hidden>
+      <div class="kbd-hint"><kbd>Espace</kbd> Suivant</div>
+      <div class="kbd-hint"><kbd>R</kbd> Révéler</div>
+      <div class="kbd-hint"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> Lire un terme</div>
     </div>
   </div>
 
@@ -577,6 +740,43 @@
     </div>
   </div>
 
+  <!-- Réglages du mode chiffres -->
+  <div class="modal-overlay" id="numbers-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Mode chiffres</h2>
+        <button class="btn-modal-close" onclick="closeNumbersSettings()">✕</button>
+      </div>
+      <div class="modal-body modal-body-padded">
+        <div class="settings-group">
+          <label class="settings-label">Affichage</label>
+          <div class="settings-chips" id="chips-display">
+            <button class="chip" data-display="digit" type="button">Chiffres</button>
+            <button class="chip" data-display="object" type="button">Objets</button>
+            <button class="chip" data-display="both" type="button">Les deux</button>
+            <button class="chip" data-display="mix" type="button">Mélange</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Opération</label>
+          <div class="settings-chips" id="chips-op">
+            <button class="chip" data-op="plus" type="button">Addition (+)</button>
+            <button class="chip" data-op="minus" type="button">Soustraction (−)</button>
+            <button class="chip" data-op="both" type="button">Les deux</button>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label class="settings-label">Nombres jusqu'à</label>
+          <div class="settings-chips" id="chips-max">
+            <button class="chip" data-max="5" type="button">5</button>
+            <button class="chip" data-max="10" type="button">10</button>
+            <button class="chip" data-max="20" type="button">20</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ── Données par défaut ──
     const DEFAULT_WORDS = [
@@ -614,6 +814,21 @@
 
     const FLOAT_CLASSES = ['float-1', 'float-2', 'float-3', 'float-4'];
 
+    // ── Mode chiffres ──
+    const MODE_KEY = 'alphabebe-mode-v1';
+    const NUMBERS_OPTS_KEY = 'alphabebe-numbers-opts-v1';
+    const OBJECT_EMOJIS = ['🍎', '🐰', '⭐', '🌸', '🐝', '🍓', '🦋', '🐞', '🍒', '🐢'];
+    const NUMBER_COLORS = [
+      '#1a3a1a', '#E63946', '#457B9D', '#F4A261', '#7B2D8E', '#2D936C',
+      '#E91E8C', '#0B7A75', '#FF6B6B', '#3D5A80', '#E6A817',
+      '#588B00', '#C20088', '#1D3557', '#F77F00', '#9B5DE5',
+      '#6B7F2E', '#E84393', '#00B4D8', '#00998F', '#D35400',
+    ];
+    const FRENCH_NUMBERS = [
+      'zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix',
+      'onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf','vingt'
+    ];
+
     // ── État ──
     let words = [];
     let currentWordIndex = 0;
@@ -621,7 +836,12 @@
     let imageVisible = true;
     let pendingImage = null;
     let modalOpen = false;
+    let numbersModalOpen = false;
     let voices = [];
+    let mode = localStorage.getItem(MODE_KEY) || 'letters';
+    let numberOpts = loadNumberOpts();
+    let currentCalc = null;
+    let resultRevealed = false;
 
     // ── Chargement ──
     function loadWords() {
@@ -757,6 +977,235 @@
       renderWord();
     }
 
+    // ── Mode chiffres : options ──
+    function defaultNumberOpts() {
+      return { display: 'both', operation: 'both', maxNumber: 10 };
+    }
+
+    function loadNumberOpts() {
+      try {
+        const saved = localStorage.getItem(NUMBERS_OPTS_KEY);
+        if (saved) return { ...defaultNumberOpts(), ...JSON.parse(saved) };
+      } catch (e) { /* ignoré */ }
+      return defaultNumberOpts();
+    }
+
+    function saveNumberOpts() {
+      localStorage.setItem(NUMBERS_OPTS_KEY, JSON.stringify(numberOpts));
+    }
+
+    function numberToFrench(n) {
+      return FRENCH_NUMBERS[n] ?? String(n);
+    }
+
+    function colorForNumber(n) {
+      return NUMBER_COLORS[n] || '#1a3a1a';
+    }
+
+    function speakNumber(n) { speak(numberToFrench(n)); }
+
+    function speakOperator(op) {
+      const map = { '+': 'plus', '-': 'moins', '=': 'égale' };
+      speak(map[op] || op);
+    }
+
+    // ── Mode chiffres : génération ──
+    function generateCalc() {
+      const max = numberOpts.maxNumber;
+      let opChoices;
+      if (numberOpts.operation === 'plus') opChoices = ['+'];
+      else if (numberOpts.operation === 'minus') opChoices = ['-'];
+      else opChoices = ['+', '-'];
+      const op = opChoices[Math.floor(Math.random() * opChoices.length)];
+
+      let a, b, result;
+      if (op === '+') {
+        a = Math.floor(Math.random() * (max - 1)) + 1;
+        b = Math.floor(Math.random() * (max - a)) + 1;
+        result = a + b;
+      } else {
+        a = Math.floor(Math.random() * (max - 1)) + 2;
+        b = Math.floor(Math.random() * (a - 1)) + 1;
+        result = a - b;
+      }
+
+      let displays;
+      if (numberOpts.display === 'mix') {
+        const choices = ['digit', 'object', 'both'];
+        displays = [
+          choices[Math.floor(Math.random() * choices.length)],
+          choices[Math.floor(Math.random() * choices.length)],
+          choices[Math.floor(Math.random() * choices.length)],
+        ];
+      } else {
+        displays = [numberOpts.display, numberOpts.display, numberOpts.display];
+      }
+
+      const emoji = OBJECT_EMOJIS[Math.floor(Math.random() * OBJECT_EMOJIS.length)];
+      return { a, op, b, result, displays, emoji };
+    }
+
+    // ── Mode chiffres : rendu ──
+    function makeTerm(value, display, emoji) {
+      const term = document.createElement('div');
+      term.className = 'calc-term';
+
+      const showDigit  = display === 'digit'  || display === 'both';
+      const showObject = display === 'object' || display === 'both';
+
+      if (showDigit) {
+        const digit = document.createElement('div');
+        digit.className = 'term-digit';
+        digit.textContent = value;
+        digit.style.color = colorForNumber(value);
+        term.appendChild(digit);
+      }
+
+      if (showObject && value > 0) {
+        const objects = document.createElement('div');
+        objects.className = 'term-objects';
+        for (let i = 0; i < value; i++) {
+          const obj = document.createElement('span');
+          obj.className = 'term-object';
+          obj.textContent = emoji;
+          objects.appendChild(obj);
+        }
+        term.appendChild(objects);
+      }
+
+      // Cas limite : value = 0 en mode "object" → on tombe sur le chiffre
+      if (term.children.length === 0) {
+        const digit = document.createElement('div');
+        digit.className = 'term-digit';
+        digit.textContent = value;
+        digit.style.color = colorForNumber(value);
+        term.appendChild(digit);
+      }
+
+      term.addEventListener('click', () => speakNumber(value));
+      return term;
+    }
+
+    function makeOp(symbol) {
+      const op = document.createElement('div');
+      op.className = 'calc-op';
+      op.textContent = symbol === '-' ? '−' : symbol;
+      op.addEventListener('click', () => speakOperator(symbol));
+      return op;
+    }
+
+    function renderCalc() {
+      const row = document.getElementById('calc-row');
+      if (!currentCalc) {
+        row.innerHTML = '';
+        return;
+      }
+      row.innerHTML = '';
+
+      const { a, op, b, result, displays, emoji } = currentCalc;
+      row.appendChild(makeTerm(a, displays[0], emoji));
+      row.appendChild(makeOp(op));
+      row.appendChild(makeTerm(b, displays[1], emoji));
+      row.appendChild(makeOp('='));
+
+      if (resultRevealed) {
+        row.appendChild(makeTerm(result, displays[2], emoji));
+      } else {
+        const term = document.createElement('div');
+        term.className = 'calc-term term-hidden';
+        const q = document.createElement('div');
+        q.className = 'term-digit';
+        q.textContent = '?';
+        q.style.color = '#64655c';
+        term.appendChild(q);
+        term.addEventListener('click', revealResult);
+        row.appendChild(term);
+      }
+    }
+
+    function revealResult() {
+      if (!currentCalc) return;
+      if (!resultRevealed) {
+        resultRevealed = true;
+        renderCalc();
+      }
+      speakNumber(currentCalc.result);
+    }
+
+    function nextCalc() {
+      currentCalc = generateCalc();
+      resultRevealed = false;
+      renderCalc();
+    }
+
+    // ── Bascule de mode ──
+    function goNext() {
+      if (mode === 'letters') nextWord();
+      else nextCalc();
+    }
+
+    function toggleMode() {
+      mode = mode === 'letters' ? 'numbers' : 'letters';
+      localStorage.setItem(MODE_KEY, mode);
+      applyMode();
+    }
+
+    function applyMode() {
+      const lettersView   = document.getElementById('letters-view');
+      const numbersView   = document.getElementById('numbers-view');
+      const modeIcon      = document.getElementById('mode-icon');
+      const lettersHints  = document.getElementById('kbd-hints-letters');
+      const numbersHints  = document.getElementById('kbd-hints-numbers');
+      const navBrand      = document.getElementById('nav-brand');
+
+      if (mode === 'letters') {
+        lettersView.hidden = false;
+        numbersView.hidden = true;
+        modeIcon.textContent = '123';
+        lettersHints.hidden = false;
+        numbersHints.hidden = true;
+        navBrand.textContent = 'Bravo !';
+      } else {
+        lettersView.hidden = true;
+        numbersView.hidden = false;
+        modeIcon.textContent = 'ABC';
+        lettersHints.hidden = true;
+        numbersHints.hidden = false;
+        navBrand.textContent = 'On compte !';
+        if (!currentCalc) currentCalc = generateCalc();
+        renderCalc();
+      }
+    }
+
+    // ── Menu contextuel ──
+    function openMenu() {
+      if (mode === 'letters') openWordList();
+      else openNumbersSettings();
+    }
+
+    function openNumbersSettings() {
+      document.getElementById('numbers-modal').classList.add('open');
+      numbersModalOpen = true;
+      updateChips();
+    }
+
+    function closeNumbersSettings() {
+      document.getElementById('numbers-modal').classList.remove('open');
+      numbersModalOpen = false;
+    }
+
+    function updateChips() {
+      document.querySelectorAll('#chips-display .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.display === numberOpts.display);
+      });
+      document.querySelectorAll('#chips-op .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.op === numberOpts.operation);
+      });
+      document.querySelectorAll('#chips-max .chip').forEach(c => {
+        c.classList.toggle('active', String(numberOpts.maxNumber) === c.dataset.max);
+      });
+    }
+
     // ── Sélection d'image ──
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('image-file-input').addEventListener('change', (e) => {
@@ -777,6 +1226,32 @@
 
       document.getElementById('new-word-input').addEventListener('keydown', (e) => {
         if (e.key === 'Enter') addWord();
+      });
+
+      // Chips du mode chiffres
+      document.querySelectorAll('#chips-display .chip').forEach(c => {
+        c.addEventListener('click', () => {
+          numberOpts.display = c.dataset.display;
+          saveNumberOpts();
+          updateChips();
+          if (mode === 'numbers') nextCalc();
+        });
+      });
+      document.querySelectorAll('#chips-op .chip').forEach(c => {
+        c.addEventListener('click', () => {
+          numberOpts.operation = c.dataset.op;
+          saveNumberOpts();
+          updateChips();
+          if (mode === 'numbers') nextCalc();
+        });
+      });
+      document.querySelectorAll('#chips-max .chip').forEach(c => {
+        c.addEventListener('click', () => {
+          numberOpts.maxNumber = parseInt(c.dataset.max, 10);
+          saveNumberOpts();
+          updateChips();
+          if (mode === 'numbers') nextCalc();
+        });
       });
     });
 
@@ -882,7 +1357,9 @@
     }
 
     function closeModalOnOverlay(e) {
-      if (e.target === e.currentTarget) closeWordList();
+      if (e.target !== e.currentTarget) return;
+      if (e.currentTarget.id === 'numbers-modal') closeNumbersSettings();
+      else closeWordList();
     }
 
     // ── Tooltip (mobile : tap pour ouvrir/fermer) ──
@@ -897,9 +1374,14 @@
 
     // ── Clavier ──
     document.addEventListener('keydown', (e) => {
-      if (modalOpen || e.target.tagName === 'INPUT') return;
-      if (words.length === 0) return;
+      if (modalOpen || numbersModalOpen || e.target.tagName === 'INPUT') return;
 
+      if (mode === 'numbers') {
+        handleNumbersKey(e);
+        return;
+      }
+
+      if (words.length === 0) return;
       const len = words[currentWordIndex].text.length;
 
       switch (e.key) {
@@ -941,9 +1423,38 @@
       }
     });
 
+    function handleNumbersKey(e) {
+      if (!currentCalc) return;
+      switch (e.key) {
+        case ' ':
+        case 'ArrowDown':
+        case 'ArrowUp':
+          e.preventDefault();
+          nextCalc();
+          break;
+        case 'r': case 'R':
+          e.preventDefault();
+          revealResult();
+          break;
+        case '1':
+          e.preventDefault();
+          speakNumber(currentCalc.a);
+          break;
+        case '2':
+          e.preventDefault();
+          speakOperator(currentCalc.op);
+          break;
+        case '3':
+          e.preventDefault();
+          speakNumber(currentCalc.b);
+          break;
+      }
+    }
+
     // ── Initialisation ──
     words = loadWords();
     renderWord();
+    applyMode();
   </script>
 </body>
 </html>
